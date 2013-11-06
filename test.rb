@@ -44,6 +44,12 @@ b = B.new
 
 a.do_stuff
 
+b.subscribe 'things', ->(arg) { puts arg }
+
+a.do_stuff
+puts 'did stuff'
+a.publish 'things', 'hi'
+
 =begin
 class A
   include DramaQueen::Publisher
