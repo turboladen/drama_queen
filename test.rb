@@ -1,8 +1,5 @@
 require './lib/drama_queen/publisher'
 
-<<<<<<< HEAD
-require './lib/drama_queen/publisher'
-
 class A
   include DramaQueen::Publisher
 
