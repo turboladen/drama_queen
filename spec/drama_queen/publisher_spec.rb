@@ -40,6 +40,10 @@ describe DramaQueen::Publisher do
       }]
     end
 
+    after do
+      DramaQueen.unsubscribe_all
+    end
+
     it 'calls the callback' do
       subscriber.expect :send, true, [:test_method, []]
       subject.publish('test')
