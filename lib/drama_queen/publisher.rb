@@ -5,10 +5,13 @@ module DramaQueen
   module Publisher
     def publish(topic, *args)
       return unless DramaQueen.subscribers.has_key? topic
+      puts "publishing..."
 
-      DramaQueen.subscribers[topic].each do |s|
-        s[:subscriber].send(s[:callback], args)
+      publisher = Fiber.new do
+        DramaQueen.subscribers[topic][:fiber].resume(*args)
       end
+
+      publisher.resume
     end
   end
 end
