@@ -15,11 +15,15 @@ module DramaQueen
         DramaQueen.subscribers[topic][:callables] = []
 
         DramaQueen.subscribers[topic][:fiber] = Fiber.new do |args|
-          puts "fiber args: #{args}"
+          loop do
+            #puts "fiber args: #{args}"
 
-          DramaQueen.subscribers[topic][:callables].each_with_index do |callable, i|
-            #puts "subscriber: #{i}"
-            callable.call(args)
+            DramaQueen.subscribers[topic][:callables].each_with_index do |callable, i|
+              #puts "subscriber: #{i}"
+              callable.call(args)
+            end
+
+            Fiber.yield
           end
         end
       end
