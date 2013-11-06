@@ -1,5 +1,6 @@
 require './lib/drama_queen/publisher'
 
+<<<<<<< HEAD
 require './lib/drama_queen/publisher'
 
 class A
@@ -69,7 +70,10 @@ class B
   end
 
   def call_me(msg)
-    #puts "I got called!"
+    #puts msg
+  end
+
+  def call_me2(msg)
     #puts msg
   end
 end
