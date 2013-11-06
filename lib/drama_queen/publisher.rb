@@ -7,7 +7,7 @@ module DramaQueen
       return unless DramaQueen.subscribers.has_key? topic
 
       DramaQueen.subscribers[topic].each do |s|
-        s[:subscriber].send(s[:callback], args)
+        s[:callback].call(*args)
       end
     end
   end
