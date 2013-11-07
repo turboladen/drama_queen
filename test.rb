@@ -1,3 +1,4 @@
+=begin
 require './lib/drama_queen/publisher'
 
 class A
@@ -49,6 +50,39 @@ b.subscribe 'things', ->(arg) { puts arg }
 a.do_stuff
 puts 'did stuff'
 a.publish 'things', 'hi'
+=end
+
+require './lib/drama_queen/publisher'
+
+class A
+  include DramaQueen::Publisher
+
+  def do_stuff
+    criteria = -> { true }
+    publish criteria, "I'm doing the stuff111111111"
+  end
+end
+
+
+require './lib/drama_queen/subscriber'
+
+class B
+  include DramaQueen::Subscriber
+
+  def initialize
+    criteria = -> { true }
+    subscribe criteria, :call_me
+  end
+
+  def call_me(msg)
+    puts msg
+  end
+end
+
+a = A.new
+b = B.new
+
+a.do_stuff
 
 =begin
 class A

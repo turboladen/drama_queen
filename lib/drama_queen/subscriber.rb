@@ -8,10 +8,8 @@ module DramaQueen
       callable_callback = callback.is_a?(Symbol) ? method(callback) : callback
 
       DramaQueen.subscribers[topic] ||= SubscriberGroup.new
+      puts "group: #{DramaQueen.subscribers[topic]}"
       DramaQueen.subscribers[topic] << callable_callback
-
-      #puts "topic size: #{DramaQueen.subscribers[topic].count}"
-      #puts "topics: #{DramaQueen.subscribers.keys}"
     end
   end
 end
