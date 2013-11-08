@@ -1,22 +1,23 @@
-require_relative '../spec_helper'
-require 'minitest/mock'
-require 'drama_queen/publisher'
+require 'spec_helper'
+require 'drama_queen/producer'
 
 
-describe DramaQueen::Publisher do
+describe DramaQueen::Producer do
   subject do
-    Object.new.extend(DramaQueen::Publisher)
+    Object.new.extend(described_class)
+  end
+
+  before do
+    DramaQueen.unsubscribe_all
   end
 
   describe '#publish with no subscribers' do
     before do
-      DramaQueen.subscribers.stub(:has_key?, false) do
-        false
-      end
+      allow(DramaQueen.subscribers).to receive(:has_key?) { false }
     end
 
     it 'returns nil' do
-      subject.publish('test').must_equal nil
+      expect(subject.publish('test')).to be_nil
     end
   end
 
@@ -26,27 +27,26 @@ describe DramaQueen::Publisher do
     end
 
     it 'returns nil' do
-      subject.publish('test').must_equal nil
+      expect(subject.publish('test')).to be_nil
     end
   end
 
   describe '#publish with subscribers of a same topic' do
-    let(:subscriber) { MiniTest::Mock.new }
-
-    before do
-      DramaQueen.subscribers['test'] = [{
-        subscriber: subscriber,
+    let(:consumer) { double 'Consumer' }
+    let(:subscriber_group) do
+      [{
+        subscriber: consumer,
         callback: :test_method
       }]
     end
 
-    after do
-      DramaQueen.unsubscribe_all
+    before do
+      DramaQueen.subscribers['test'] = subscriber_group
     end
 
     it 'calls the callback' do
-      subscriber.expect :send, true, [:test_method, []]
-      subject.publish('test')
+      expect(subscriber_group).to receive(:notify_with)
+      expect(subject.publish('test')).to eq true
     end
   end
 end

@@ -52,10 +52,10 @@ puts 'did stuff'
 a.publish 'things', 'hi'
 =end
 
-require './lib/drama_queen/publisher'
+require './lib/drama_queen/producer'
 
 class A
-  include DramaQueen::Publisher
+  include DramaQueen::Producer
 
   def do_stuff
     criteria = -> { true }
@@ -64,10 +64,10 @@ class A
 end
 
 
-require './lib/drama_queen/subscriber'
+require './lib/drama_queen/consumer'
 
 class B
-  include DramaQueen::Subscriber
+  include DramaQueen::Consumer
 
   def initialize
     criteria = -> { true }

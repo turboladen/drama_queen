@@ -21,4 +21,5 @@ with the ability to pub-sub on topics.  Topics can be any Ruby object.}
 
   spec.add_development_dependency 'bundler', '~> 1.3'
   spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'rspec', '~> 2.14'
 end
