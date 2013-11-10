@@ -1,5 +1,4 @@
 require_relative '../drama_queen'
-require_relative 'subscriber_group'
 
 
 module DramaQueen
@@ -22,8 +21,12 @@ module DramaQueen
         raise "The given callback is not a Symbol, nor responds to #call: #{callback}"
       end
 
-      DramaQueen.subscribers[topic] ||= SubscriberGroup.new
-      DramaQueen.subscribers[topic] << callable_callback
+      unless DramaQueen.subscriptions.has_key? topic
+        t = Topic.new(topic)
+        DramaQueen.subscriptions[topic] = t
+      end
+
+      DramaQueen.subscriptions[topic].subscribers << callable_callback
     end
   end
 end

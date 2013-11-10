@@ -14,8 +14,8 @@ describe DramaQueen::Consumer do
       expect(subject).to receive(:method).with(:call_me) { callback }
       subject.subscribe('test', :call_me)
 
-      expect(DramaQueen.subscribers.size).to eq 1
-      expect(DramaQueen.subscribers['test']).to eq [callback]
+      expect(DramaQueen.subscriptions.size).to eq 1
+      expect(DramaQueen.subscriptions['test'].subscribers).to eq [callback]
     end
   end
 end

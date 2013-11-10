@@ -10,17 +10,20 @@ module DramaQueen
   # to the subscribers; this is up to how you want to use them.
   module Producer
 
-    # @param topic
+    # @param topic_key
     # @param args
-    def publish(topic, *args)
-      unless DramaQueen.subscribers.has_key? topic
-        puts "Topics: #{DramaQueen.subscribers.keys.join(', ')}"
-        warn "No topic found for: #{topic}"
+    def publish(topic_key, *args)
+      unless DramaQueen.subscriptions.has_key? topic_key
+        puts "Topics: #{DramaQueen.subscriptions.keys.join(', ')}"
+        warn "No topic found for: #{topic_key}"
+
         return
       end
 
-      unless DramaQueen.subscribers[topic].empty?
-        DramaQueen.subscribers[topic].notify_with(*args)
+      if DramaQueen.subscriptions[topic_key].empty?
+        return false
+      else
+        DramaQueen.subscriptions[topic_key].notify_with(*args)
       end
 
       true
