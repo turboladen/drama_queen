@@ -11,7 +11,7 @@ describe DramaQueen::Topic do
     end
 
     before do
-      allow(DramaQueen).to receive(:topic_keys) { topics }
+      allow(DramaQueen).to receive(:routing_keys) { topics }
     end
 
     context '*' do
