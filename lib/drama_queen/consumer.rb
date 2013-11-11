@@ -1,5 +1,5 @@
 require_relative '../drama_queen'
-require_relative 'routing_key'
+require_relative 'exchange'
 
 
 module DramaQueen
@@ -34,7 +34,7 @@ module DramaQueen
     private
 
     def add_topic_for(routing_key_primitive)
-      routing_key = RoutingKey.new(routing_key_primitive)
+      routing_key = Exchange.new(routing_key_primitive)
       topic = Topic.new(routing_key)
       DramaQueen.subscriptions[routing_key] = topic
     end

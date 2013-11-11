@@ -1,36 +1,36 @@
 module DramaQueen
 
-  # A RoutingKey determines which objects will receive messages from a Producer.
-  # It is merely a wrapper around the +primitive+ that is given on
-  # initialization, allowing to more easily determine which routes are related,
-  # and thus if any subscribers to the related routes should get notified in
-  # addition to the subscribers to this route.
+  # An Exchange determines which objects will receive messages from a Producer.
+  # It is merely a wrapper around the +routing_key+ that is given on
+  # initialization, allowing to more easily determine which routing_keys are related,
+  # and thus if any subscribers to the related exchanges should get notified in
+  # addition to the subscribers to this exchange.
   #
-  # A RoutingKey primitive is what Producers and Consumers refer to when they're
-  # looking to publish or subscribe.  The RoutingKey primitive can be any
+  # A Exchange routing_key is what Producers and Consumers refer to when they're
+  # looking to publish or subscribe.  The Exchange +routing_key+ can be any
   # object, but some extra semantics & functionality come along if you use
-  # DramaQueen's simple hierarchy model.
+  # DramaQueen's route_key globbing.
   #
   # === Ruby Objects
   #
-  # First, the simplest case: a primitive that is any Ruby object.  Producers
-  # and Subscribers will use this case when pub/sub-ing on that Ruby object.  No
-  # related RoutingKeys will match; all messages published to this RoutingKey
-  # will only get delivered to consumers subscribing to this RoutingKey
-  # primitive.  If you're only needing this approach, you might be better off
-  # just using Ruby's build-in +Observer+ library--it accomplishes this, and is
-  # much simpler than DramaQueen.
+  # First, the simplest case: a routing_key that is any Ruby object.  Producers
+  # and subscribers will use this case when pub/sub-ing on that Ruby object.  No
+  # related routing_keys will match; all messages published using this routing_key
+  # will only get delivered to consumers subscribing to this Exchange's
+  # routing_key.  If you only need this approach, you might be better off just
+  # using Ruby's build-in +Observer+ library--it accomplishes this, and is much
+  # simpler than DramaQueen.
   #
   # === RouteKey Globbing
   #
-  # Now, the fun stuff: RoutingKey globbing are period-delimited strings that
-  # infer some hierarchy.  Using this approach lets you tie
-  # together other RoutingKeys via +#related_keys+, thus letting you build
+  # Now, the fun stuff: routing_key globbing uses period-delimited strings to
+  # infer some hierarchy of Exchanges.  Using this approach lets you tie
+  # together other Exchanges via +#related_keys+, thus letting you build
   # some organization/structure into your whole system of routing messages.
   # These globs (somewhat similar to using +Dir.glob+ for file systems) let your
   # producers and consumers pub/sub to large numbers of topics, yet organize
   # those topics.  The structure that you build is up to you.  Here's a
-  # contrived example.  You could use key primitives like:
+  # contrived example.  You could use key routing_key like:
   #
   # * +"my_library.bob.pants"+
   # * +"my_library.bob.shirts"+
@@ -58,12 +58,12 @@ module DramaQueen
   # As you're devising your routing key scheme, consider naming like you would
   # name classes/modules in a Ruby library: use namespaces to avoid messing
   # others up!  Notice the use of +"my_library..."+ above... that was on purpose.
-  class RoutingKey
-    attr_reader :primitive
+  class Exchange
+    attr_reader :routing_key
 
-    # @param [Object] primitive
-    def initialize(primitive)
-      @primitive = primitive
+    # @param [Object] routing_key
+    def initialize(routing_key)
+      @routing_key = routing_key
     end
 
     # @param [Object] routing_key
@@ -72,18 +72,18 @@ module DramaQueen
       related_keys.include? routing_key
     end
 
-    # @return [Array<DramaQueen::RoutingKey]
+    # @return [Array<DramaQueen::Exchange]
     def related_keys
-      return DramaQueen.routing_keys if self.primitive == '**'
+      return DramaQueen.exchanges if self.routing_key == '**'
 
-      DramaQueen.routing_keys.find_all do |routing_key|
-        next if routing_key.primitive == '**'
-        next if routing_key.primitive == self.primitive
+      DramaQueen.exchanges.find_all do |routing_key|
+        next if routing_key.routing_key == '**'
+        next if routing_key.routing_key == self.routing_key
 
-        if self.primitive.is_a?(String) && routing_key.primitive.is_a?(String)
+        if self.routing_key.is_a?(String) && routing_key.routing_key.is_a?(String)
 
-          primitive_match?(routing_key.primitive, self.primitive) ||
-            primitive_match?(self.primitive, routing_key.primitive)
+          routing_key_match?(routing_key.routing_key, self.routing_key) ||
+            routing_key_match?(self.routing_key, routing_key.routing_key)
         else
           routing_key == self
         end
@@ -93,7 +93,7 @@ module DramaQueen
     private
 
     # @return [Boolean]
-    def primitive_match?(first, second)
+    def routing_key_match?(first, second)
       self_matcher = make_matchable(second)
 
       !!first.match(Regexp.new(self_matcher))

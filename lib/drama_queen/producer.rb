@@ -1,5 +1,5 @@
 require_relative '../drama_queen'
-require_relative 'routing_key'
+require_relative 'exchange'
 
 
 module DramaQueen
@@ -16,7 +16,7 @@ module DramaQueen
     # @return [Boolean] +true+ if anything was published; +false+ if not.
     def publish(routing_key_primitive, *args)
       routing_key = DramaQueen.routing_key_by_primitive(routing_key_primitive)
-      routing_key ||= DramaQueen::RoutingKey.new(routing_key_primitive)
+      routing_key ||= DramaQueen::Exchange.new(routing_key_primitive)
 
       topic = DramaQueen.subscriptions[routing_key]
 

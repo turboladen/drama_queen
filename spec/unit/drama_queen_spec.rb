@@ -17,16 +17,16 @@ describe DramaQueen do
     let(:routing_key) { double 'DramaQueen::RoutingKey' }
 
     before do
-      allow(subject).to receive(:routing_keys) { [routing_key] }
+      allow(subject).to receive(:exchanges) { [routing_key] }
     end
 
     context 'does not route' do
-      before { allow(routing_key).to receive(:primitive) { 'another key' } }
+      before { allow(routing_key).to receive(:routing_key) { 'another key' } }
       specify { expect(subject.routing_key_by_primitive 'test_key').to eq nil }
     end
 
     context 'does route' do
-      before { allow(routing_key).to receive(:primitive) { 'test_key' } }
+      before { allow(routing_key).to receive(:routing_key) { 'test_key' } }
       specify { expect(subject.routing_key_by_primitive 'test_key').to eq routing_key }
     end
   end
@@ -35,7 +35,7 @@ describe DramaQueen do
     let(:routing_key) { double 'DramaQueen::RoutingKey' }
 
     before do
-      allow(subject).to receive(:routing_keys) { [routing_key] }
+      allow(subject).to receive(:exchanges) { [routing_key] }
     end
 
     context 'does not route' do

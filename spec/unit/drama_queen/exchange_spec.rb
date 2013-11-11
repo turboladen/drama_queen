@@ -1,8 +1,8 @@
 require 'spec_helper'
-require 'drama_queen/routing_key'
+require 'drama_queen/exchange'
 
 
-describe DramaQueen::RoutingKey do
+describe DramaQueen::Exchange do
   let(:prim_object) { Object.new }
   let(:prim_all) { '**' }
   let(:prim_all_root) { '*' }
@@ -35,7 +35,7 @@ describe DramaQueen::RoutingKey do
   let(:key_root_child3_and_grandchild) { described_class.new 'root.child3.grandchild' }
   let(:key_root_all_children_with_grandchild) { described_class.new 'root.*.grandchild' }
 
-  let(:routing_keys) do
+  let(:exchanges) do
     [
       key_object,
       key_all,
@@ -56,7 +56,7 @@ describe DramaQueen::RoutingKey do
   end
 
   before do
-    allow(DramaQueen).to receive(:routing_keys) { routing_keys }
+    allow(DramaQueen).to receive(:exchanges) { exchanges }
   end
 
   describe '#related_keys' do
@@ -64,7 +64,7 @@ describe DramaQueen::RoutingKey do
       subject { described_class.new(prim_all) }
 
       it 'returns all keys' do
-        expect(subject.related_keys).to eq routing_keys
+        expect(subject.related_keys).to eq exchanges
       end
     end
 

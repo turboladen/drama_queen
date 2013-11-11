@@ -39,7 +39,7 @@ describe DramaQueen::Consumer do
 
     it 'creates a new RoutingKey and Topic and adds those to the subscriptions list' do
       new_routing_key = 'test_routing_key'
-      expect(DramaQueen::RoutingKey).to receive(:new).with(new_routing_key) { routing_key }
+      expect(DramaQueen::Exchange).to receive(:new).with(new_routing_key) { routing_key }
       expect(DramaQueen::Topic).to receive(:new) { topic }
       expect(DramaQueen.subscriptions).to receive(:[]=).with(routing_key, topic)
 

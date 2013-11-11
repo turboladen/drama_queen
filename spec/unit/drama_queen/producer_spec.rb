@@ -22,7 +22,7 @@ describe DramaQueen::Producer do
       let(:routing_key) { double 'DramaQueen::RoutingKey' }
 
       before do
-        allow(DramaQueen::RoutingKey).to receive(:new) { routing_key }
+        allow(DramaQueen::Exchange).to receive(:new) { routing_key }
       end
 
       context 'topic has no consumers' do

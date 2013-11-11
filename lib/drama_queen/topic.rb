@@ -1,16 +1,16 @@
 module DramaQueen
+
+  # A Topic is the thing that consumers subscribe to.  You probably don't
+  # need to use this explicitly; this is what DramaQueen::Producer uses to
+  # notify subscribers.
   class Topic
 
-    # A Topic is the thing that consumers subscribe to.  You probably don't
-    # need to use this explicitly; this is what DramaQueen::Producer uses to
-    # notify subscribers.
-    #
     # @return [Array]
     attr_reader :subscribers
 
     attr_reader :routing_key
 
-    # @param [DramaQueen::RoutingKey] routing_key
+    # @param [DramaQueen::Exchange] routing_key
     def initialize(routing_key)
       @routing_key = routing_key
       @subscribers = []
