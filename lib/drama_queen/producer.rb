@@ -17,13 +17,19 @@ module DramaQueen
       routing_key = DramaQueen.routing_key_by_primitive(routing_key_primitive)
       routing_key ||= DramaQueen::RoutingKey.new(routing_key_primitive)
 
+      topic = DramaQueen.subscriptions[routing_key]
+
       related_topics = routing_key.related_keys.map do |related_route|
         DramaQueen.subscriptions[related_route]
       end
 
-      return false if related_topics.empty?
+      all_topics = [topic] + related_topics
+      all_topics.compact!
+      all_topics.uniq!
 
-      related_topics.each do |topic|
+      return false if all_topics.empty?
+
+      all_topics.each do |topic|
         topic.notify_with(*args)
       end
 

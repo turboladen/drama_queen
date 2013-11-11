@@ -73,7 +73,6 @@ describe DramaQueen::RoutingKey do
 
       it 'returns all root level keys' do
         expect(subject.related_keys).to eq [
-          key_all_root,
           key_root,
           key_notroot
         ]
@@ -84,7 +83,7 @@ describe DramaQueen::RoutingKey do
       subject { described_class.new(prim_object) }
 
       specify do
-        expect(subject.related_keys).to eq [key_object]
+        expect(subject.related_keys).to eq []
       end
     end
 
@@ -93,8 +92,7 @@ describe DramaQueen::RoutingKey do
 
       specify do
         expect(subject.related_keys).to eq [
-          key_all_root,
-          key_root
+          key_all_root
         ]
       end
     end
@@ -105,7 +103,6 @@ describe DramaQueen::RoutingKey do
       specify do
         expect(subject.related_keys).to eq [
           key_all_root,
-          key_notroot
         ]
       end
     end
@@ -115,7 +112,6 @@ describe DramaQueen::RoutingKey do
 
       specify do
         expect(subject.related_keys).to eq [
-          key_root_and_tree,
           key_root_and_children,
           key_root_child1,
           key_root_child2,
@@ -135,7 +131,6 @@ describe DramaQueen::RoutingKey do
       specify do
         expect(subject.related_keys).to eq [
           key_root_and_tree,
-          key_root_and_children,
           key_root_child1,
           key_root_child2
         ]
@@ -149,7 +144,6 @@ describe DramaQueen::RoutingKey do
         expect(subject.related_keys).to eq [
           key_root_and_tree,
           key_root_and_children,
-          key_root_child1
         ]
       end
     end
@@ -161,7 +155,6 @@ describe DramaQueen::RoutingKey do
         expect(subject.related_keys).to eq [
           key_root_and_tree,
           key_root_and_children,
-          key_root_child2
         ]
       end
     end
@@ -172,7 +165,6 @@ describe DramaQueen::RoutingKey do
       specify do
         expect(subject.related_keys).to eq [
           key_root_and_tree,
-          key_root_child1_and_children
         ]
       end
     end
@@ -183,7 +175,6 @@ describe DramaQueen::RoutingKey do
       specify do
         expect(subject.related_keys).to eq [
           key_root_and_tree,
-          key_root_child2_and_children,
           key_root_child2_and_grandchild
         ]
       end
@@ -196,7 +187,6 @@ describe DramaQueen::RoutingKey do
         expect(subject.related_keys).to eq [
           key_root_and_tree,
           key_root_child2_and_children,
-          key_root_child2_and_grandchild,
           key_root_all_children_with_grandchild
         ]
       end
@@ -208,7 +198,6 @@ describe DramaQueen::RoutingKey do
       specify do
         expect(subject.related_keys).to eq [
           key_root_and_tree,
-          key_root_child2_and_greatgrandchild
         ]
       end
     end
@@ -219,7 +208,6 @@ describe DramaQueen::RoutingKey do
       specify do
         expect(subject.related_keys).to eq [
           key_root_and_tree,
-          key_root_child3_and_grandchild,
           key_root_all_children_with_grandchild
         ]
       end
@@ -233,7 +221,6 @@ describe DramaQueen::RoutingKey do
           key_root_and_tree,
           key_root_child2_and_grandchild,
           key_root_child3_and_grandchild,
-          key_root_all_children_with_grandchild
         ]
       end
     end

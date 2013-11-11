@@ -19,12 +19,14 @@ module DramaQueen
 
       DramaQueen.routing_keys.find_all do |routing_key|
         next if routing_key.primitive == '**'
+        next if routing_key.primitive == self.primitive
 
         if self.primitive.is_a?(String) && routing_key.primitive.is_a?(String)
+
           primitive_match?(routing_key.primitive, self.primitive) ||
             primitive_match?(self.primitive, routing_key.primitive)
         else
-          routing_key == self || routing_key.primitive == self.primitive
+          routing_key == self
         end
       end
     end
