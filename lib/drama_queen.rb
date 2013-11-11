@@ -12,20 +12,28 @@ module DramaQueen
     @subscriptions ||= {}
   end
 
+  # @return [Array]
   def self.exchanges
     subscriptions.keys
   end
 
-  def self.routing_key_by_primitive(routing_key_primitive)
-    exchanges.find do |routing_key|
-      routing_key.routing_key == routing_key_primitive
+  # Finds the DramaQueen::Exchange for the given +routing_key+.
+  #
+  # @param [Object] routing_key
+  # @return [DramaQueen::Exchange]
+  def self.exchange_by_routing_key(routing_key)
+    exchanges.find do |exchange|
+      exchange.routing_key == routing_key
     end
   end
 
-  def self.routes_to?(routing_key_query)
-    !!routing_key_by_primitive(routing_key_query)
+  # @param [Object] routing_key
+  # @return [Boolean]
+  def self.routes_to?(routing_key)
+    !!exchange_by_routing_key(routing_key)
   end
 
+  # @return [Array]
   def self.topics
     subscriptions.values
   end

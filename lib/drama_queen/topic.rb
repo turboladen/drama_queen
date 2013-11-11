@@ -8,17 +8,18 @@ module DramaQueen
     # @return [Array]
     attr_reader :subscribers
 
-    attr_reader :routing_key
+    # @return [Object]
+    attr_reader :exchange
 
-    # @param [DramaQueen::Exchange] routing_key
-    def initialize(routing_key)
-      @routing_key = routing_key
+    # @param [DramaQueen::Exchange] exchange
+    def initialize(exchange)
+      @exchange = exchange
       @subscribers = []
     end
 
     # @return [Array<DramaQueen::Topic>]
     def related_topics
-      @routing_key.related_keys.map do |topic_key|
+      @exchange.related_keys.map do |topic_key|
         DramaQueen.subscriptions[topic_key]
       end
     end

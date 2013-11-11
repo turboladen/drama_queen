@@ -76,16 +76,15 @@ module DramaQueen
     def related_keys
       return DramaQueen.exchanges if self.routing_key == '**'
 
-      DramaQueen.exchanges.find_all do |routing_key|
-        next if routing_key.routing_key == '**'
-        next if routing_key.routing_key == self.routing_key
+      DramaQueen.exchanges.find_all do |exchange|
+        next if exchange.routing_key == '**'
+        next if exchange.routing_key == self.routing_key
 
-        if self.routing_key.is_a?(String) && routing_key.routing_key.is_a?(String)
-
-          routing_key_match?(routing_key.routing_key, self.routing_key) ||
-            routing_key_match?(self.routing_key, routing_key.routing_key)
+        if self.routing_key.is_a?(String) && exchange.routing_key.is_a?(String)
+          routing_key_match?(exchange.routing_key, self.routing_key) ||
+            routing_key_match?(self.routing_key, exchange.routing_key)
         else
-          routing_key == self
+          exchange == self
         end
       end
     end

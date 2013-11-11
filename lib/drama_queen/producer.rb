@@ -15,7 +15,7 @@ module DramaQueen
     # @param args
     # @return [Boolean] +true+ if anything was published; +false+ if not.
     def publish(routing_key_primitive, *args)
-      routing_key = DramaQueen.routing_key_by_primitive(routing_key_primitive)
+      routing_key = DramaQueen.exchange_by_routing_key(routing_key_primitive)
       routing_key ||= DramaQueen::Exchange.new(routing_key_primitive)
 
       topic = DramaQueen.subscriptions[routing_key]
