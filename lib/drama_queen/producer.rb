@@ -1,4 +1,5 @@
 require_relative '../drama_queen'
+require_relative 'routing_key'
 
 
 module DramaQueen
@@ -10,20 +11,20 @@ module DramaQueen
   # to the subscribers; this is up to how you want to use them.
   module Producer
 
-    # @param topic_key
+    # @param routing_key_primitive
     # @param args
-    def publish(topic_key, *args)
-      unless DramaQueen.subscriptions.has_key? topic_key
-        puts "Topics: #{DramaQueen.subscriptions.keys.join(', ')}"
-        warn "No topic found for: #{topic_key}"
+    def publish(routing_key_primitive, *args)
+      routing_key = DramaQueen.routing_key_by_primitive(routing_key_primitive)
+      routing_key ||= DramaQueen::RoutingKey.new(routing_key_primitive)
 
-        return
+      related_topics = routing_key.related_keys.map do |related_route|
+        DramaQueen.subscriptions[related_route]
       end
 
-      if DramaQueen.subscriptions[topic_key].empty?
-        return false
-      else
-        DramaQueen.subscriptions[topic_key].notify_with(*args)
+      return false if related_topics.empty?
+
+      related_topics.each do |topic|
+        topic.notify_with(*args)
       end
 
       true

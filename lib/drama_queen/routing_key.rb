@@ -1,37 +1,50 @@
 module DramaQueen
   class RoutingKey
-    attr_reader :original
+    attr_reader :primitive
 
-    def initialize(original)
-      @original = original
+    # @param [Object] primitive
+    def initialize(primitive)
+      @primitive = primitive
     end
 
+    # @param [Object] routing_key
+    # @return [Boolean]
     def routes_to?(routing_key)
-      routes.include? routing_key
+      related_keys.include? routing_key
     end
 
-    def routes
-      return DramaQueen.routing_keys if self.original == '**'
+    # @return [Array<DramaQueen::RoutingKey]
+    def related_keys
+      return DramaQueen.routing_keys if self.primitive == '**'
 
       DramaQueen.routing_keys.find_all do |routing_key|
-        if self.original.is_a?(String) && routing_key.is_a?(String)
-          self_matcher = make_matchable(self.original)
+        next if routing_key.primitive == '**'
 
-          routing_key == self.original ||
-            routing_key.match(Regexp.new(self_matcher))
+        if self.primitive.is_a?(String) && routing_key.primitive.is_a?(String)
+          primitive_match?(routing_key.primitive, self.primitive) ||
+            primitive_match?(self.primitive, routing_key.primitive)
         else
-          routing_key == self.original
+          routing_key == self || routing_key.primitive == self.primitive
         end
       end
     end
 
     private
 
+    # @return [Boolean]
+    def primitive_match?(first, second)
+      self_matcher = make_matchable(second)
+
+      !!first.match(Regexp.new(self_matcher))
+    end
+
+    # @param [String] string
+    # @return [String]
     def make_matchable(string)
       matcher = if string =~ %r[\*\*]
         string.sub(%r[\.?\*\*], '\..+')
       elsif string =~ %r[\*]
-        string.sub(%r[\*], '[^\.|**]+')
+        string.sub(%r[\*], '[^\.]+')
       else
         string
       end

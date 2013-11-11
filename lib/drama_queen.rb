@@ -12,8 +12,18 @@ module DramaQueen
     @subscriptions ||= {}
   end
 
-  def self.topic_keys
+  def self.routing_keys
     subscriptions.keys
+  end
+
+  def self.routing_key_by_primitive(routing_key_primitive)
+    routing_keys.find do |routing_key|
+      routing_key.primitive == routing_key_primitive
+    end
+  end
+
+  def self.routes_to?(routing_key_query)
+    !!routing_key_by_primitive(routing_key_query)
   end
 
   def self.topics
