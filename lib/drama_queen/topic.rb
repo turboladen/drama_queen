@@ -31,9 +31,5 @@ module DramaQueen
         subscriber.call(*args)
       end
     end
-
-    def callback(*args)
-      puts "called with args: #{args}"
-    end
   end
 end

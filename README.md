@@ -104,6 +104,49 @@ producer.do_stuff
 Moral of the story: The topic that you publish/subscribe on can be any Ruby
 object--how you use this is up to you.
 
+### Topic Matching
+
+```ruby
+class A
+  include DramaQueen::Consumer
+
+  def initialize
+    subscribe 'root.*.children', :call_me
+  end
+
+  def call_me(*args)
+    puts "A got called with args: #{args}"
+  end
+end
+
+class B
+  include DramaQueen::Producer
+
+  def do_stuff
+    publish 'root.parent', 1, 2, 3
+  end
+end
+
+class C
+  include DramaQueen::Producer
+
+  def do_stuff
+    publish 'root.parent.children', 1, 2, 3
+  end
+end
+
+a = A.new
+b = B.new
+c = C.new
+
+b.do_stuff
+
+# (A does not get called)
+c.do_stuff
+# "A got called with args: 1, 2, 3
+#=> true
+```
+
 ### Synchronous Only!
 
 DramaQueen does not use any threading or fancy asynchronous stuff.  When your

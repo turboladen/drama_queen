@@ -13,6 +13,7 @@ module DramaQueen
 
     # @param routing_key_primitive
     # @param args
+    # @return [Boolean] +true+ if anything was published; +false+ if not.
     def publish(routing_key_primitive, *args)
       routing_key = DramaQueen.routing_key_by_primitive(routing_key_primitive)
       routing_key ||= DramaQueen::RoutingKey.new(routing_key_primitive)
