@@ -64,7 +64,7 @@ describe DramaQueen::Exchange do
       subject { described_class.new(prim_all) }
 
       it 'returns all keys' do
-        expect(subject.related_keys).to eq exchanges
+        expect(subject.related_exchanges).to eq exchanges
       end
     end
 
@@ -72,7 +72,7 @@ describe DramaQueen::Exchange do
       subject { described_class.new(prim_all_root) }
 
       it 'returns all root level keys' do
-        expect(subject.related_keys).to eq [
+        expect(subject.related_exchanges).to eq [
           key_root,
           key_notroot
         ]
@@ -83,7 +83,7 @@ describe DramaQueen::Exchange do
       subject { described_class.new(prim_object) }
 
       specify do
-        expect(subject.related_keys).to eq []
+        expect(subject.related_exchanges).to eq []
       end
     end
 
@@ -91,7 +91,7 @@ describe DramaQueen::Exchange do
       subject { described_class.new(prim_root) }
 
       specify do
-        expect(subject.related_keys).to eq [
+        expect(subject.related_exchanges).to eq [
           key_all_root
         ]
       end
@@ -101,7 +101,7 @@ describe DramaQueen::Exchange do
       subject { described_class.new(prim_notroot) }
 
       specify do
-        expect(subject.related_keys).to eq [
+        expect(subject.related_exchanges).to eq [
           key_all_root,
         ]
       end
@@ -111,7 +111,7 @@ describe DramaQueen::Exchange do
       subject { described_class.new(prim_root_and_tree) }
 
       specify do
-        expect(subject.related_keys).to eq [
+        expect(subject.related_exchanges).to eq [
           key_root_and_children,
           key_root_child1,
           key_root_child2,
@@ -129,7 +129,7 @@ describe DramaQueen::Exchange do
       subject { described_class.new(prim_root_and_children) }
 
       specify do
-        expect(subject.related_keys).to eq [
+        expect(subject.related_exchanges).to eq [
           key_root_and_tree,
           key_root_child1,
           key_root_child2
@@ -141,7 +141,7 @@ describe DramaQueen::Exchange do
       subject { described_class.new(prim_root_child1) }
 
       specify do
-        expect(subject.related_keys).to eq [
+        expect(subject.related_exchanges).to eq [
           key_root_and_tree,
           key_root_and_children,
         ]
@@ -152,7 +152,7 @@ describe DramaQueen::Exchange do
       subject { described_class.new(prim_root_child2) }
 
       specify do
-        expect(subject.related_keys).to eq [
+        expect(subject.related_exchanges).to eq [
           key_root_and_tree,
           key_root_and_children,
         ]
@@ -163,7 +163,7 @@ describe DramaQueen::Exchange do
       subject { described_class.new(prim_root_child1_and_children) }
 
       specify do
-        expect(subject.related_keys).to eq [
+        expect(subject.related_exchanges).to eq [
           key_root_and_tree,
         ]
       end
@@ -173,7 +173,7 @@ describe DramaQueen::Exchange do
       subject { described_class.new(prim_root_child2_and_children) }
 
       specify do
-        expect(subject.related_keys).to eq [
+        expect(subject.related_exchanges).to eq [
           key_root_and_tree,
           key_root_child2_and_grandchild
         ]
@@ -184,7 +184,7 @@ describe DramaQueen::Exchange do
       subject { described_class.new(prim_root_child2_and_grandchild) }
 
       specify do
-        expect(subject.related_keys).to eq [
+        expect(subject.related_exchanges).to eq [
           key_root_and_tree,
           key_root_child2_and_children,
           key_root_all_children_with_grandchild
@@ -196,7 +196,7 @@ describe DramaQueen::Exchange do
       subject { described_class.new(prim_root_child2_and_greatgrandchild) }
 
       specify do
-        expect(subject.related_keys).to eq [
+        expect(subject.related_exchanges).to eq [
           key_root_and_tree,
         ]
       end
@@ -206,7 +206,7 @@ describe DramaQueen::Exchange do
       subject { described_class.new(prim_root_child3_and_grandchild) }
 
       specify do
-        expect(subject.related_keys).to eq [
+        expect(subject.related_exchanges).to eq [
           key_root_and_tree,
           key_root_all_children_with_grandchild
         ]
@@ -217,11 +217,35 @@ describe DramaQueen::Exchange do
       subject { described_class.new(prim_root_all_children_with_grandchild) }
 
       specify do
-        expect(subject.related_keys).to eq [
+        expect(subject.related_exchanges).to eq [
           key_root_and_tree,
           key_root_child2_and_grandchild,
           key_root_child3_and_grandchild,
         ]
+      end
+    end
+  end
+
+  describe '#notify_with' do
+    let(:object) { Object.new }
+
+    subject do
+      described_class.new 'test_key'
+    end
+
+    context 'list is empty' do
+      it 'does not raise an error' do
+        expect { subject.notify_with('stuff') }.to_not raise_exception
+      end
+    end
+
+    context 'list is not empty' do
+      it 'it #calls each subscriber with the given args' do
+        subscriber = double 'Subscriber'
+        subject.instance_variable_set(:@subscribers, [subscriber])
+        expect(subscriber).to receive('call').with(1, 2, 3)
+
+        subject.notify_with 1, 2, 3
       end
     end
   end

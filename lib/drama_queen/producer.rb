@@ -11,30 +11,22 @@ module DramaQueen
   # to the subscribers; this is up to how you want to use them.
   module Producer
 
-    # @param routing_key_primitive
+    # @param routing_key
     # @param args
     # @return [Boolean] +true+ if anything was published; +false+ if not.
-    def publish(routing_key_primitive, *args)
-      routing_key = DramaQueen.exchange_by_routing_key(routing_key_primitive)
-      routing_key ||= DramaQueen::Exchange.new(routing_key_primitive)
+    def publish(routing_key, *args)
+      exchange = DramaQueen.exchange_for(routing_key)
+      exchange ||= DramaQueen::Exchange.new(routing_key)
 
-      topic = DramaQueen.subscriptions[routing_key]
+      all_exchanges = [exchange] + exchange.related_exchanges
+      subscription_count = 0
 
-      related_topics = routing_key.related_keys.map do |related_route|
-        DramaQueen.subscriptions[related_route]
+      all_exchanges.each do |exchange|
+        subscription_count += exchange.subscribers.size
+        exchange.notify_with(*args)
       end
 
-      all_topics = [topic] + related_topics
-      all_topics.compact!
-      all_topics.uniq!
-
-      return false if all_topics.empty?
-
-      all_topics.each do |topic|
-        topic.notify_with(*args)
-      end
-
-      true
+      !subscription_count.zero?
     end
   end
 end

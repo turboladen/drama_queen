@@ -7,21 +7,16 @@ module DramaQueen
   # The list of all subscriptions that DramaQueen knows about.  This is updated
   # by DramaQueen::Consumers as they subscribe to topics.
   #
-  # @return [Hash{Object => DramaQueen::Topic}]
-  def self.subscriptions
-    @subscriptions ||= {}
-  end
-
-  # @return [Array]
+  # @return [Array<DramaQueen::Exchange>]
   def self.exchanges
-    subscriptions.keys
+    @exchanges ||= Array.new
   end
 
   # Finds the DramaQueen::Exchange for the given +routing_key+.
   #
   # @param [Object] routing_key
   # @return [DramaQueen::Exchange]
-  def self.exchange_by_routing_key(routing_key)
+  def self.exchange_for(routing_key)
     exchanges.find do |exchange|
       exchange.routing_key == routing_key
     end
@@ -30,18 +25,13 @@ module DramaQueen
   # @param [Object] routing_key
   # @return [Boolean]
   def self.routes_to?(routing_key)
-    !!exchange_by_routing_key(routing_key)
-  end
-
-  # @return [Array]
-  def self.topics
-    subscriptions.values
+    !!exchange_for(routing_key)
   end
 
   # Removes all subscribers from the subscribers list.
   #
-  # @return [Hash]
+  # @return [Array]
   def self.unsubscribe_all
-    @subscriptions = {}
+    @exchanges = Array.new
   end
 end

@@ -3,49 +3,92 @@ require 'drama_queen/producer'
 
 
 describe DramaQueen::Producer do
-  subject do
-    Object.new.extend(described_class)
-  end
+  subject { Object.new.extend(described_class) }
+
+  let(:exchange) { double 'DramaQueen::Exchange', subscribers: [] }
 
   before do
-    DramaQueen.unsubscribe_all
+    allow(DramaQueen).to receive(:exchange_for).with('test') { exchange }
   end
 
   describe '#publish' do
-    context 'with no subscribers' do
-      it 'returns false' do
-        expect(subject.publish('test')).to eq false
+    context 'with no related exchanges' do
+      context 'with no subscribers' do
+        before do
+          allow(exchange).to receive(:related_exchanges) { [] }
+        end
+
+        it 'returns false' do
+          allow(exchange).to receive(:notify_with)
+          expect(subject.publish('test', :an_arg)).to eq false
+        end
+
+        it 'calls #notify_with on the exchange' do
+          expect(exchange).to receive(:notify_with).with(:an_arg)
+          subject.publish('test', :an_arg)
+        end
+      end
+
+      context 'with subscribers' do
+        before do
+          allow(exchange).to receive(:related_exchanges) { [] }
+          exchange.subscribers << [1, 2]
+        end
+
+        it 'returns true' do
+          allow(exchange).to receive(:notify_with)
+          expect(subject.publish('test', :an_arg)).to eq true
+        end
+
+        it 'calls #notify_with on the exchange' do
+          expect(exchange).to receive(:notify_with).with(:an_arg)
+          subject.publish('test', :an_arg)
+        end
       end
     end
 
-    context 'with subscribers of a same topic' do
-      let(:exchange) { double 'DramaQueen::Exchange' }
+    context 'with related exchanges' do
+      let(:another_exchange) do
+        double 'DramaQueen::Exchange'
+      end
 
       before do
-        allow(DramaQueen::Exchange).to receive(:new) { exchange }
+        allow(exchange).to receive(:related_exchanges) { [another_exchange] }
       end
 
-      context 'topic has no consumers' do
+      context 'with no subscribers' do
         before do
-          allow(exchange).to receive(:related_keys) { [] }
+          allow(another_exchange).to receive(:subscribers) { [] }
         end
 
-        it 'does not call the callback' do
-          expect(subject.publish('test')).to eq false
+        it 'calls #notify_with' do
+          expect(exchange).to receive(:notify_with).with(:an_arg)
+          expect(another_exchange).to receive(:notify_with).with(:an_arg)
+          subject.publish('test', :an_arg)
+        end
+
+        it 'returns false' do
+          allow(exchange).to receive(:notify_with)
+          allow(another_exchange).to receive(:notify_with)
+          expect(subject.publish('test', :an_arg)).to eq false
         end
       end
 
-      context 'topic has consumers' do
-        let(:topic) { double 'DramaQueen::Topic' }
-
+      context 'with subscribers' do
         before do
-          allow(exchange).to receive(:related_keys) { [exchange] }
-          allow(DramaQueen.subscriptions).to receive(:[]).with(exchange) { topic }
+          allow(another_exchange).to receive(:subscribers) { [1, 2] }
         end
 
-        it 'calls the callback' do
-          expect(topic).to receive(:notify_with)
-          expect(subject.publish('test')).to eq true
+        it 'calls #notify_with' do
+          expect(exchange).to receive(:notify_with).with(:an_arg)
+          expect(another_exchange).to receive(:notify_with).with(:an_arg)
+          subject.publish('test', :an_arg)
+        end
+
+        it 'returns true' do
+          allow(exchange).to receive(:notify_with)
+          allow(another_exchange).to receive(:notify_with)
+          expect(subject.publish('test', :an_arg)).to eq true
         end
       end
     end

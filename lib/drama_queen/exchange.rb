@@ -61,19 +61,23 @@ module DramaQueen
   class Exchange
     attr_reader :routing_key
 
+    # @return [Array]
+    attr_reader :subscribers
+
     # @param [Object] routing_key
     def initialize(routing_key)
       @routing_key = routing_key
+      @subscribers = []
     end
 
     # @param [Object] routing_key
     # @return [Boolean]
     def routes_to?(routing_key)
-      related_keys.include? routing_key
+      related_exchanges.include? routing_key
     end
 
     # @return [Array<DramaQueen::Exchange]
-    def related_keys
+    def related_exchanges
       return DramaQueen.exchanges if self.routing_key == '**'
 
       DramaQueen.exchanges.find_all do |exchange|
@@ -86,6 +90,15 @@ module DramaQueen
         else
           exchange == self
         end
+      end
+    end
+
+    # Calls each subscriber's callback with the given arguments.
+    #
+    # @param args
+    def notify_with(*args)
+      @subscribers.each do |subscriber|
+        subscriber.call(*args)
       end
     end
 

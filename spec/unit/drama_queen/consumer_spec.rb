@@ -7,43 +7,43 @@ describe DramaQueen::Consumer do
     Object.new.extend(DramaQueen::Consumer)
   end
 
-  let(:exchange) { double 'DramaQueen::Exchange' }
+  let(:exchange) { double 'DramaQueen::Exchange', subscribers: [] }
+  let(:callback) { double 'Method', call: true }
 
   describe '#subscribe' do
-    context 'with a Symbol callback' do
-      context 'routing key exists' do
-        let(:topic) { double 'DramaQueen::Topic', subscribers: [] }
+    before do
+      allow(DramaQueen).to receive(:exchange_for).with('test') { exchange }
+    end
 
-        before do
-          allow(DramaQueen).to receive(:routes_to?).with('test') { true }
-          allow(DramaQueen).to receive(:exchange_by_routing_key).with('test') { exchange }
-          allow(DramaQueen.subscriptions).to receive(:[]).with(exchange) { topic }
-        end
+    context 'routing key exists' do
+      before do
+        allow(DramaQueen).to receive(:routes_to?).with('test') { true }
+      end
 
-        it 'adds itself to the list of subscribers' do
-          callback = double 'Method', call: true
+      it "creates a new exchange and adds itself to exchange's subscribers" do
+        expect(DramaQueen.exchanges).to_not receive(:<<)
+        expect(subject).to receive(:method).with(:call_me) { callback }
 
-          expect(subject).to_not receive(:add_topic_for)
-          expect(subject).to receive(:method).with(:call_me) { callback }
+        subject.subscribe('test', :call_me)
 
-          subject.subscribe('test', :call_me)
-
-          expect(topic.subscribers).to eq [callback]
-        end
+        expect(exchange.subscribers).to eq [callback]
       end
     end
-  end
 
-  describe '#add_topic_for' do
-    let(:topic) { double 'DramaQueen::Topic' }
+    context 'routing key does not exist' do
+      before do
+        allow(DramaQueen).to receive(:routes_to?).with('test') { false }
+      end
 
-    it 'creates a new RoutingKey and Topic and adds those to the subscriptions list' do
-      new_routing_key = 'test_routing_key'
-      expect(DramaQueen::Exchange).to receive(:new).with(new_routing_key) { exchange }
-      expect(DramaQueen::Topic).to receive(:new) { topic }
-      expect(DramaQueen.subscriptions).to receive(:[]=).with(exchange, topic)
+      it "find the exchange and adds itself to exchange's subscribers" do
+        expect(DramaQueen::Exchange).to receive(:new).with('test') { exchange }
+        expect(DramaQueen.exchanges).to receive(:<<).with(exchange)
+        expect(subject).to receive(:method).with(:call_me) { callback }
 
-      subject.send(:add_topic_for, new_routing_key)
+        subject.subscribe('test', :call_me)
+
+        expect(exchange.subscribers).to eq [callback]
+      end
     end
   end
 end

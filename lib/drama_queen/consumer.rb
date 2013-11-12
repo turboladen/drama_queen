@@ -23,22 +23,11 @@ module DramaQueen
       end
 
       unless DramaQueen.routes_to? routing_key
-        add_topic_for(routing_key)
+        DramaQueen.exchanges << Exchange.new(routing_key)
       end
 
-      routing_key = DramaQueen.exchange_by_routing_key(routing_key)
-
-      DramaQueen.subscriptions[routing_key].subscribers << callable_callback
-    end
-
-    private
-
-    def add_topic_for(routing_key)
-      exchange = Exchange.new(routing_key)
-      topic = Topic.new(exchange)
-      DramaQueen.subscriptions[exchange] = topic
+      exchange = DramaQueen.exchange_for(routing_key)
+      exchange.subscribers << callable_callback
     end
   end
 end
-
-require_relative 'topic'

@@ -9,25 +9,25 @@ describe DramaQueen do
 
   let(:exchange) { double 'DramaQueen::Exchange' }
 
-  describe '.subscribers' do
-    it 'is created as an empty Hash' do
-      expect(subject.subscriptions).to be_an_instance_of Hash
+  describe '.exchanges' do
+    it 'is created as an empty Array' do
+      expect(subject.exchanges).to be_an_instance_of Array
     end
   end
 
-  describe '.exchange_by_routing_key' do
+  describe '.exchange_for' do
     before do
       allow(subject).to receive(:exchanges) { [exchange] }
     end
 
     context 'does not route' do
       before { allow(exchange).to receive(:routing_key) { 'another key' } }
-      specify { expect(subject.exchange_by_routing_key 'test_key').to eq nil }
+      specify { expect(subject.exchange_for 'test_key').to eq nil }
     end
 
     context 'does route' do
       before { allow(exchange).to receive(:routing_key) { 'test_key' } }
-      specify { expect(subject.exchange_by_routing_key 'test_key').to eq exchange }
+      specify { expect(subject.exchange_for 'test_key').to eq exchange }
     end
   end
 
@@ -38,7 +38,7 @@ describe DramaQueen do
 
     context 'does not route' do
       before do
-        allow(subject).to receive(:exchange_by_routing_key).
+        allow(subject).to receive(:exchange_for).
           with('test_key') { false }
       end
 
@@ -47,7 +47,7 @@ describe DramaQueen do
 
     context 'does route' do
       before do
-        allow(subject).to receive(:exchange_by_routing_key).
+        allow(subject).to receive(:exchange_for).
           with('test_key') { true }
       end
 
