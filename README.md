@@ -3,6 +3,8 @@
 A simple, synchronous pub-sub/observer library that allows objects to observe or
 publish and subscribe to topics.
 
+[![Build Status](https://travis-ci.org/turboladen/drama_queen.png?branch=master)](https://travis-ci.org/turboladen/drama_queen)
+
 ## Features
 
 * Observe Ruby objects and receive updates when they change
