@@ -2,9 +2,9 @@ module DramaQueen
 
   # An Exchange determines which objects will receive messages from a Producer.
   # It is merely a wrapper around the +routing_key+ that is given on
-  # initialization, allowing to more easily determine which routing_keys are related,
-  # and thus if any subscribers to the related exchanges should get notified in
-  # addition to the subscribers to this exchange.
+  # initialization, allowing to more easily determine which routing_keys are
+  # related, and thus if any subscribers to the related exchanges should get
+  # notified in addition to the subscribers to this exchange.
   #
   # A Exchange routing_key is what Producers and Consumers refer to when they're
   # looking to publish or subscribe.  The Exchange +routing_key+ can be any
@@ -13,24 +13,24 @@ module DramaQueen
   #
   # === Ruby Objects
   #
-  # First, the simplest case: a routing_key that is any Ruby object.  Producers
-  # and subscribers will use this case when pub/sub-ing on that Ruby object.  No
-  # related routing_keys will match; all messages published using this routing_key
-  # will only get delivered to consumers subscribing to this Exchange's
-  # routing_key.  If you only need this approach, you might be better off just
-  # using Ruby's build-in +Observer+ library--it accomplishes this, and is much
-  # simpler than DramaQueen.
+  # First, the simplest case: a +routing_key+ that is any Ruby object.
+  # Producers and subscribers will use this case when observing that Ruby
+  # object.  #related_exchanges will be empty; all messages published using this
+  # routing_key will only get delivered to consumers subscribing to this
+  # Exchange's routing_key.  If you only need this approach, you might be better
+  # off just using Ruby's build-in +Observer+ library--it accomplishes this, and
+  # is much simpler than DramaQueen.
   #
   # === RouteKey Globbing
   #
-  # Now, the fun stuff: routing_key globbing uses period-delimited strings to
+  # Now, the fun stuff: routing key globbing uses period-delimited strings to
   # infer some hierarchy of Exchanges.  Using this approach lets you tie
   # together other Exchanges via +#related_keys+, thus letting you build
   # some organization/structure into your whole system of routing messages.
   # These globs (somewhat similar to using +Dir.glob+ for file systems) let your
   # producers and consumers pub/sub to large numbers of topics, yet organize
   # those topics.  The structure that you build is up to you.  Here's a
-  # contrived example.  You could use key routing_key like:
+  # contrived example.  You could use set up a routing key scheme like:
   #
   # * +"my_library.bob.pants"+
   # * +"my_library.bob.shirts"+
@@ -53,12 +53,15 @@ module DramaQueen
   # Lastly, you can you a double-asterisk to denote that you want everything
   # from that level and deeper.  So, +"**"+ would match _all_ existing routing
   # keys, including single-object (non-glob style) keys.  +"my_library.**"+
-  # would match all four of our +"my_library"+ keys.
+  # would match all four of our +"my_library"+ keys above.
   #
   # As you're devising your routing key scheme, consider naming like you would
   # name classes/modules in a Ruby library: use namespaces to avoid messing
-  # others up!  Notice the use of +"my_library..."+ above... that was on purpose.
+  # others up!  Notice the use of +"my_library..."+ above... that was on
+  # purpose.
   class Exchange
+
+    # @return [Object]
     attr_reader :routing_key
 
     # @return [Array]
@@ -76,6 +79,9 @@ module DramaQueen
       related_exchanges.include? routing_key
     end
 
+    # All other DramaQueen::Exchange objects that the current Exchange routes
+    # to.
+    #
     # @return [Array<DramaQueen::Exchange]
     def related_exchanges
       return DramaQueen.exchanges if self.routing_key == '**'

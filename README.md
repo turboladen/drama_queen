@@ -1,21 +1,16 @@
 # DramaQueen
 
-A simple, synchronous pub-sub/observer library that allows objects to publish and subscribe
-to topics.
+A simple, synchronous pub-sub/observer library that allows objects to observe or
+publish and subscribe to topics.
 
-## Installation
+## Features
 
-Add this line to your application's Gemfile:
+* Observe Ruby objects and receive updates when they change
+  ([Observer Pattern](http://en.wikipedia.org/wiki/Observer_pattern))
+* Subscribe and publish on a topic or routing key
+  ([Publish-Subscribe Pattern](http://en.wikipedia.org/wiki/Publish–subscribe_pattern))
+* Synchronous, no threading
 
-    gem 'drama_queen'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install drama_queen
 
 ## Usage
 
@@ -104,7 +99,9 @@ producer.do_stuff
 Moral of the story: The topic that you publish/subscribe on can be any Ruby
 object--how you use this is up to you.
 
-### Topic Matching
+### Routing Key Matching
+
+Thus far, we've talked about subscribing to a "topic".
 
 ```ruby
 class A
@@ -147,6 +144,8 @@ c.do_stuff
 #=> true
 ```
 
+See {DramaQueen::Exchange} for more.
+
 ### Synchronous Only!
 
 DramaQueen does not use any threading or fancy asynchronous stuff.  When your
@@ -155,16 +154,32 @@ producer publishes, you can expect your subscribers to receive the notifications
 * in the order the publishing was triggered, and
 * in the order that consumers subscribed.
 
-This is intentional.
+This is intentional.  If you want publishing to take place in a thread, you can
+thread your call to #publish in your code.
 
 ### Application-wide
 
-DramaQueen stores all of its topics and subscribers in a singleton, which is
-thus accessible throughout your app/library.  This makes it possible to
-subscribe to a topic in one object and publish to that topic in another
-unrelated object from anywhere in your code.  And while you have access to
-`DramaQueen`, you shouldn't ever need to deal with it directly--just use
-`#publish` and `#subscribe` and let it do its thing.
+DramaQueen stores all of its exchanges in a singleton, which is thus accessible
+throughout your app/library.  This makes it possible to subscribe to a topic in
+one object and publish to that topic in another unrelated object from anywhere
+in your code.  And while you have access to `DramaQueen`, you shouldn't ever
+need to deal with it directly--just use `#publish` and `#subscribe` and let it
+do its thing.
+
+
+## Installation
+
+Add this line to your application's Gemfile:
+
+    gem 'drama_queen'
+
+And then execute:
+
+    $ bundle
+
+Or install it yourself as:
+
+    $ gem install drama_queen
 
 
 ## Contributing

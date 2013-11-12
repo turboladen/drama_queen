@@ -1,10 +1,10 @@
 require_relative 'drama_queen/version'
 
 
-# This is the singleton that holds all topics and subscriptions.
+# This is the singleton that maintains the list of active exchanges.
 module DramaQueen
 
-  # The list of all subscriptions that DramaQueen knows about.  This is updated
+  # The list of all exchanges that DramaQueen knows about.  This is updated
   # by DramaQueen::Consumers as they subscribe to topics.
   #
   # @return [Array<DramaQueen::Exchange>]
@@ -28,7 +28,7 @@ module DramaQueen
     !!exchange_for(routing_key)
   end
 
-  # Removes all subscribers from the subscribers list.
+  # Removes all exchanges from the exchanges list.
   #
   # @return [Array]
   def self.unsubscribe_all

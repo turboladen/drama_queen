@@ -11,7 +11,8 @@ module DramaQueen
   # called.
   module Consumer
 
-    # @param routing_key The route or object to subscribe to.
+    # @param [Object] routing_key The routing key that represents the Exchange
+    #   to subscribe to.
     # @param [Symbol,Method,Proc] callback If given a Symbol, this will be
     #   converted to a Method that gets called on the includer of Consumer.  If
     #   +callback+ is not a Symbol, it simply must just respond to +call+.
