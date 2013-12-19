@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.description   = %q{A simple, non-threaded, local-object pub-sub/observer
 with the ability to pub-sub on topics.  Topics can be any Ruby object.}
   spec.summary       = spec.description
-  spec.homepage      = 'https://githb.com/turboladen/drama_queen'
+  spec.homepage      = 'https://github.com/turboladen/drama_queen'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files`.split($/)
