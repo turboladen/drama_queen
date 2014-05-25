@@ -87,7 +87,7 @@ module DramaQueen
     def related_exchanges
       return DramaQueen.exchanges if self.routing_key == '**'
 
-      DramaQueen.exchanges.find_all do |exchange|
+      DramaQueen.exchanges.find_all do |_, exchange|
         next if exchange.routing_key == '**'
         next if exchange.routing_key == self.routing_key
 
@@ -97,7 +97,7 @@ module DramaQueen
         else
           exchange == self
         end
-      end
+      end.map { |a| a.last }
     end
 
     # Calls each subscriber's callback with the given arguments.
@@ -107,6 +107,13 @@ module DramaQueen
       @subscribers.each do |subscriber|
         subscriber.call(*args)
       end
+    end
+
+    # Unsubscribes the given +consumer+ from the exchange.
+    #
+    # @return [Boolean]
+    def unsubscribe(consumer)
+      !!subscribers.delete(consumer)
     end
 
     private

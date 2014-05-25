@@ -36,27 +36,35 @@ describe DramaQueen::Exchange do
   let(:key_root_all_children_with_grandchild) { described_class.new 'root.*.grandchild' }
 
   let(:exchanges) do
-    [
-      key_object,
-      key_all,
-      key_all_root,
-      key_root,
-      key_notroot,
-      key_root_and_tree,
-      key_root_and_children,
-      key_root_child1,
-      key_root_child2,
-      key_root_child1_and_children,
-      key_root_child2_and_children,
-      key_root_child2_and_grandchild,
-      key_root_child2_and_greatgrandchild,
-      key_root_child3_and_grandchild,
-      key_root_all_children_with_grandchild
-    ]
+    {
+      prim_object => key_object,
+      prim_all => key_all,
+      prim_all_root => key_all_root,
+      prim_root => key_root,
+      prim_notroot => key_notroot,
+      prim_root_and_tree => key_root_and_tree,
+      prim_root_and_children => key_root_and_children,
+      prim_root_child1 => key_root_child1,
+      prim_root_child2 => key_root_child2,
+      prim_root_child1_and_children => key_root_child1_and_children,
+      prim_root_child2_and_children => key_root_child2_and_children,
+      prim_root_child2_and_grandchild => key_root_child2_and_grandchild,
+      prim_root_child2_and_greatgrandchild => key_root_child2_and_greatgrandchild,
+      prim_root_child3_and_grandchild => key_root_child3_and_grandchild,
+      prim_root_all_children_with_grandchild => key_root_all_children_with_grandchild
+    }
   end
 
   before do
-    allow(DramaQueen).to receive(:exchanges) { exchanges }
+    DramaQueen.instance_variable_set(:@exchanges, exchanges)
+  end
+
+  describe '#initializer' do
+    it 'registers itself with DramaQueen' do
+      expect(DramaQueen.exchanges).to_not have_key 'test key'
+      described_class.new('test key')
+      expect(DramaQueen.exchanges).to have_key 'test key'
+    end
   end
 
   describe '#related_keys' do
