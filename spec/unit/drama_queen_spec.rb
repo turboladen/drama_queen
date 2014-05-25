@@ -9,37 +9,36 @@ describe DramaQueen do
 
   let(:exchange) { double 'DramaQueen::Exchange' }
 
-  describe '.exchanges' do
+  describe '.consumers' do
     it 'is created as an empty Array' do
-      expect(subject.exchanges).to be_an_instance_of Array
+      expect(subject.consumers).to be_an_instance_of Array
     end
   end
 
-  describe '.exchange_for' do
+  describe '.exchanges' do
+    let :consumer do
+      double 'DramaQueen::Consumer', exchanges: []
+    end
+
     before do
-      allow(subject).to receive(:exchanges) { [exchange] }
+      allow(subject).to receive(:consumers).and_return [consumer]
     end
 
-    context 'does not route' do
-      before { allow(exchange).to receive(:routing_key) { 'another key' } }
-      specify { expect(subject.exchange_for 'test_key').to eq nil }
+    it 'is created as an empty Hash' do
+      expect(subject.exchanges).to be_an_instance_of Hash
     end
+  end
 
-    context 'does route' do
-      before { allow(exchange).to receive(:routing_key) { 'test_key' } }
-      specify { expect(subject.exchange_for 'test_key').to eq exchange }
+  describe '.producers' do
+    it 'is created as an empty Array' do
+      expect(subject.producers).to be_an_instance_of Array
     end
   end
 
   describe '.routes_to?' do
-    before do
-      allow(subject).to receive(:exchanges) { [exchange] }
-    end
-
     context 'does not route' do
       before do
-        allow(subject).to receive(:exchange_for).
-          with('test_key') { false }
+        allow(subject).to receive(:exchanges) { { 'not_test_key' => [exchange] } }
       end
 
       specify { expect(subject.routes_to? 'test_key').to eq false }
@@ -47,8 +46,7 @@ describe DramaQueen do
 
     context 'does route' do
       before do
-        allow(subject).to receive(:exchange_for).
-          with('test_key') { true }
+        allow(subject).to receive(:exchanges) { { 'test_key' => [exchange] } }
       end
 
       specify { expect(subject.routes_to? 'test_key').to eq true }

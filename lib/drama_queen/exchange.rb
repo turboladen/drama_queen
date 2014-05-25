@@ -71,6 +71,7 @@ module DramaQueen
     def initialize(routing_key)
       @routing_key = routing_key
       @subscribers = []
+      DramaQueen.exchanges[routing_key] = self
     end
 
     # @param [Object] routing_key
@@ -82,7 +83,7 @@ module DramaQueen
     # All other DramaQueen::Exchange objects that the current Exchange routes
     # to.
     #
-    # @return [Array<DramaQueen::Exchange]
+    # @return [Array<DramaQueen::Exchange>]
     def related_exchanges
       return DramaQueen.exchanges if self.routing_key == '**'
 
@@ -135,3 +136,5 @@ module DramaQueen
     end
   end
 end
+
+require_relative '../drama_queen'
