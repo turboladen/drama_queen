@@ -20,14 +20,13 @@ module DramaQueen
     @exchanges ||= Hash.new
   end
 
-  # Finds the DramaQueen::Exchange for the given +routing_key+.
+  # All known producers.  These producers may or may not be actively
+  # participating in an exchange; they've simply just ben defined as a
+  # producer.
   #
-  # @param [Object] routing_key
-  # @return [DramaQueen::Exchange]
-  def self.exchange_for(routing_key)
-    exchanges.find do |exchange|
-      exchange.routing_key == routing_key
-    end
+  # @return [Array<Object>]
+  def self.producers
+    @producers ||= Array.new
   end
 
   # @param [Object] routing_key

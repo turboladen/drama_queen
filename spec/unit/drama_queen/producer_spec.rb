@@ -8,7 +8,18 @@ describe DramaQueen::Producer do
   let(:exchange) { double 'DramaQueen::Exchange', subscribers: [] }
 
   before do
-    allow(DramaQueen).to receive(:exchange_for).with('test') { exchange }
+    #allow(DramaQueen).to receive(:exchange_for).with('test') { exchange }
+    DramaQueen.instance_variable_set(:@exchanges, { 'test' => exchange })
+  end
+
+  describe '.included' do
+    it 'adds the includer to the list of consumers' do
+      consumer = Class.new do
+        include DramaQueen::Producer
+      end
+
+      expect(DramaQueen.producers).to eq [consumer]
+    end
   end
 
   describe '#publish' do

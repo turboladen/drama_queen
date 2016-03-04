@@ -11,11 +11,15 @@ module DramaQueen
   # to the subscribers; this is up to how you want to use them.
   module Producer
 
+    def self.included(base)
+      DramaQueen.producers << base
+    end
+
     # @param routing_key
     # @param args
     # @return [Boolean] +true+ if anything was published; +false+ if not.
     def publish(routing_key, *args)
-      exchange = DramaQueen.exchange_for(routing_key)
+      exchange = DramaQueen.exchanges[routing_key]
       exchange ||= DramaQueen::Exchange.new(routing_key)
 
       all_exchanges = [exchange] + exchange.related_exchanges
